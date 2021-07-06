@@ -19,15 +19,43 @@ SHELL := /usr/bin/env bash
 # --- Build definitions -------------------------------------------------------
 #
 
+SO_MAJOR  := @so_version_major@
+SO_MINORB := @so_version_minorbuild@
+SO_MMB    := $(SO_MAJOR).$(SO_MINORB)
+
 # This variable will identify the machine architecture (ie: x86_64, ia64, etc.)
 # It will be used to construct a string that is appended to the libflame
 # library name.
 ARCH                           := @fla_host_cpu@
 
-# The install prefix tell us where to install the libraries and header file
-# directory. Notice that we support the use of DESTDIR so that advanced users
-# may install to a temporary location.
-INSTALL_PREFIX                 := $(DESTDIR)@prefix@
+# This variable identifies the operating system / kernel. It is the result of
+# 'uname -s'.
+OS_NAME                        := @os_name@
+
+# We have to set these particular variables because some of the @anchors@
+# that are substituted in via configure may be defined *in terms of* these
+# variables. For example, @libdir@ may be replaced with '${exec_prefix}/lib',
+# and if we don't define exec_prefix, libdir will end up with '/lib', which
+# is definitely not what we want.
+prefix                         := @prefix@
+exec_prefix                    := @exec_prefix@
+libdir                         := @libdir@
+includedir                     := @includedir@
+
+# The library and header installation directories tell us where to install
+# the libraries and headers, respectively. Notice that we support the use of
+# DESTDIR so that advanced users may install to a temporary location.
+INSTALL_LIBDIR                 := $(DESTDIR)$(libdir)
+INSTALL_INCDIR                 := $(DESTDIR)$(includedir)
+
+# The directory path to the top level of the source distribution. When
+# building in-tree, this path is ".". When building out-of-tree, this path
+# is path used to identify the location of configure.
+DIST_PATH                      := @dist_path@
+
+#$(info INSTALL_LIBDIR = $(INSTALL_LIBDIR))
+#$(info INSTALL_INCDIR = $(INSTALL_INCDIR))
+#$(error .)
 
 # Variables corresponding to other configure-time options.
 FLA_ENABLE_VERBOSE_MAKE_OUTPUT := @fla_enable_verbose_make_output@
@@ -37,12 +65,13 @@ FLA_ENABLE_MAX_ARG_LIST_HACK   := @fla_enable_max_arg_list_hack@
 FLA_ENABLE_BUILTIN_BLAS        := @fla_enable_builtin_blas@
 FLA_ENABLE_LAPACK2FLAME        := @fla_enable_lapack2flame@
 FLA_MULTITHREADING_MODEL       := @fla_multithreading_model@
+FLA_ENABLE_F2C_DOTC            := @fla_enable_f2c_dotc@
+FLA_ENABLE_ILP64               := @fla_enable_ilp64@
 
 # Alias the variable 'V' to the flag for verbosity.
 ifeq ($(V),1)
 FLA_ENABLE_VERBOSE_MAKE_OUTPUT := yes
 endif
-
 
 
 
@@ -78,8 +107,10 @@ EMPTY_FILE := /dev/null
 
 # --- Determine the C compiler and related flags ---
 CC           := @CC@
+CC_VENDOR    := @CC_VENDOR@
 CPPROCFLAGS  := -D_POSIX_C_SOURCE=200809L @DEFS@ @fla_blis_flags@
 CMISCFLAGS   := @fla_c_lang_flags@ @fla_c_openmp_flags@ @fla_c_prof_flags@
+CXXMISCFLAGS := -Wall -Wno-unused-function -Wno-parentheses -Wfatal-errors
 CDBGFLAGS    := @fla_c_debug_flags@
 CWARNFLAGS   := @fla_c_warning_flags@
 COPTFLAGS    := @fla_c_opt_flags@
@@ -88,6 +119,7 @@ CVECFLAGS    := @fla_c_sse_flags@
 # Add position-independent code flag if building a dynamic library.
 ifeq ($(FLA_ENABLE_DYNAMIC_BUILD),yes)
 CMISCFLAGS   += -fPIC
+CXXMISCFLAGS += -fPIC
 endif
 
 # Add explicit C99 support.
@@ -97,6 +129,7 @@ endif
 # one for code that should not be optimized.
 CFLAGS       := $(strip $(CDBGFLAGS) $(COPTFLAGS) $(CVECFLAGS) $(CWARNFLAGS) $(CMISCFLAGS) $(CPPROCFLAGS))
 CFLAGS_NOOPT := $(strip $(CDBGFLAGS) $(CWARNFLAGS) $(CMISCFLAGS) $(CPPROCFLAGS))
+CXXFLAGS     := $(strip $(CDBGFLAGS) $(COPTFLAGS) $(CVECFLAGS) $(CWARNFLAGS) $(CXXMISCFLAGS) $(CPPROCFLAGS))
 
 # If the user provided his own CFLAGS, allow them to override our own.
 # *** Notice that wo do not also modify the 'no optimization' set of flags.
@@ -130,18 +163,6 @@ else
 LDFLAGS      := @fla_c_prof_flags@ @LDFLAGS@ @FLIBS@
 endif
 endif
-
-
-
-
-#
-# --- send-thanks target definitions ------------------------------------------
-#
-
-THANKS_MSG_SUBJECT := "Thanks!"
-THANKS_MSG_BODY    := "Happy user."
-THANKS_MSG_EMAIL   := flame_thanks@cs.utexas.edu
-
 
 
 

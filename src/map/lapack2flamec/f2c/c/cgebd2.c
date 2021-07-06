@@ -229,7 +229,13 @@ int cgebd2_(integer *m, integer *n, complex *a, integer *lda, real *d__, real *e
     --tauq;
     --taup;
     --work;
+    AOCL_DTL_TRACE_ENTRY(AOCL_DTL_LEVEL_TRACE_5);
     /* Function Body */
+#if AOCL_DTL_LOG_ENABLE
+    char buffer[256];
+    sprintf(buffer, "cgebd2 inputs: m %d, n %d, lda %d\n", *m, *n, *lda);
+    AOCL_DTL_LOG(AOCL_DTL_LEVEL_TRACE_5, buffer);
+#endif
     *info = 0;
     if (*m < 0)
     {
@@ -264,7 +270,7 @@ int cgebd2_(integer *m, integer *n, complex *a, integer *lda, real *d__, real *e
             i__2 = *m - i__ + 1;
             /* Computing MIN */
             i__3 = i__ + 1;
-            clarfg_(&i__2, &alpha, &a[min(i__3,*m) + i__ * a_dim1], &c__1, & tauq[i__]);
+            clarfg_(&i__2, &alpha, &a[min(i__3,*m) + i__ * a_dim1], &c__1, &tauq[i__]);
             i__2 = i__;
             d__[i__2] = alpha.r;
             i__2 = i__ + i__ * a_dim1;
@@ -391,6 +397,7 @@ int cgebd2_(integer *m, integer *n, complex *a, integer *lda, real *d__, real *e
             /* L20: */
         }
     }
+    AOCL_DTL_TRACE_EXIT(AOCL_DTL_LEVEL_TRACE_5);
     return 0;
     /* End of CGEBD2 */
 }

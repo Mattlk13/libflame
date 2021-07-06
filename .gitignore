@@ -17,8 +17,10 @@
 # NOTE: This will result in git also exluding the top-level lib directory
 # since its only contents are .a files.
 *.a
-# dynamic library archives
+# shared libraries
 *.so
+# shared library symlinks
+*.so.*
 # test executables
 *.x
 
@@ -28,8 +30,12 @@ aclocal.m4
 config.log
 config.status
 config.sys_type
+config.dist_path
 config.mk
-version
+
+# -- monolithic headers --
+
+include/*/*.h
 
 # -- build system directories --
 

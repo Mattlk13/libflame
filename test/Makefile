@@ -16,13 +16,17 @@
 
 # Determine the path to the libflame config makefile fragment. We'll use
 # several variables defined there.
-BUILD_DIRPATH       := ../build
-CONFIG_DIRPATH      := ../config
-HOST                := $(shell sh $(BUILD_DIRPATH)/ac-utils/config.guess)
-CONFIG_MK_FRAGMENT  := $(CONFIG_DIRPATH)/$(HOST)/config.mk
+BUILD_DIR       := ../build
+CONFIG_DIR      := ../config
+LIB_DIR         := ../lib
+INCLUDE_DIR     := ../include
+HOST            := $(shell sh $(BUILD_DIR)/ac-utils/config.guess)
+CONFIG_MK_FILE  := $(CONFIG_DIR)/$(HOST)/config.mk
+LIB_PATH        := $(LIB_DIR)/$(HOST)/
+INC_PATH        := $(INCLUDE_DIR)/$(HOST)/
 
 # Include the definitions in the config makefile fragment.
--include $(CONFIG_MK_FRAGMENT)
+-include $(CONFIG_MK_FILE)
 
 
 
@@ -35,7 +39,7 @@ CONFIG_MK_FRAGMENT  := $(CONFIG_DIRPATH)/$(HOST)/config.mk
 # CC             := gcc
 # LINKER         := $(CC)
 # CFLAGS         := -g -O2 -Wall -Wno-comment
-# LDFLAGS        := 
+LDFLAGS        := -lm -lpthread
 # INSTALL_PREFIX := $(HOME)/flame
 
 
@@ -46,16 +50,17 @@ CONFIG_MK_FRAGMENT  := $(CONFIG_DIRPATH)/$(HOST)/config.mk
 
 # BLAS implementation path. A BLAS library must be given in order to run
 # the libflame test suite. Modify these definitions if needed.
-LIBBLAS_PATH   := $(INSTALL_PREFIX)/lib
+LIBBLAS_PATH   := $(INSTALL_LIBDIR)
 #LIBBLAS        := $(LIBBLAS_PATH)/libblas.a
-LIBBLAS        := $(LIBBLAS_PATH)/libopenblas.a
+#LIBBLAS        := $(LIBBLAS_PATH)/libopenblas.a
 #LIBBLAS        := $(HOME)/blis/lib/libblis.a
+LIBBLAS        := 
 
 # LAPACK implementation path. These values only matter if libflame was
 # configured with the external-lapack-interfaces option enabled. Modify
 # these definitions if needed.
-LIBLAPACK_PATH := $(INSTALL_PREFIX)/lib
-LIBLAPACK      := $(LIBLAPACK_PATH)/liblapack.a
+LIBLAPACK_PATH := $(INSTALL_LIBDIR)
+LIBLAPACK      := 
 
 
 
@@ -66,9 +71,12 @@ LIBLAPACK      := $(LIBLAPACK_PATH)/liblapack.a
 TEST_SRC_PATH  := src
 TEST_OBJ_PATH  := obj
 
-FLA_LIB_PATH   := $(INSTALL_PREFIX)/lib
-FLA_INC_PATH   := $(INSTALL_PREFIX)/include
+#FLA_LIB_PATH   := $(INSTALL_PREFIX)/lib
+#FLA_INC_PATH   := $(INSTALL_PREFIX)/include
+FLA_LIB_PATH   := $(LIB_PATH)
+FLA_INC_PATH   := $(INC_PATH)
 LIBFLAME       := $(FLA_LIB_PATH)/libflame.a
+#LIBFLAME       := $(FLA_LIB_PATH)/libflame.so
 
 CFLAGS         += -I$(FLA_INC_PATH) -I$(TEST_SRC_PATH)
 
@@ -80,6 +88,7 @@ TEST_OBJS      := $(patsubst $(TEST_SRC_PATH)/%.c, \
 TEST_BIN       := test_$(FNAME).x
 
 $(TEST_OBJ_PATH)/%.o: $(TEST_SRC_PATH)/%.c
+	mkdir -p $(TEST_OBJ_PATH)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test_$(FNAME): $(TEST_OBJS)

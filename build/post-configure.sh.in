@@ -4,11 +4,22 @@ echo ""
 echo "libflame configuration summary"
 
 echo ""
-echo "revision........................................ : @PACKAGE_VERSION@"
+echo "distribution path............................... : @dist_path@"
+
+echo ""
+echo "library version................................. : @version@"
+
+echo ""
+echo "shared object (so) version (major).............. : @so_version_major@"
+echo "shared object (so) version (minor.build)........ : @so_version_minorbuild@"
 
 echo ""
 echo "build system type............................... : @build@"
 echo "host system type................................ : @host@"
+
+echo ""
+echo "OS name......................................... : @os_name@"
+echo "OS version...................................... : @os_vers@"
 
 echo ""
 echo "Enable verbose make output...................... : @fla_enable_verbose_make_output@"
@@ -18,11 +29,16 @@ echo "Enable maximum argument list hack............... : @fla_enable_max_arg_lis
 
 echo ""
 echo "C compiler...................................... : @CC@"
+echo "C compiler vendor............................... : @CC_VENDOR@"
 echo "Library archiver................................ : @AR@"
 echo "Library archive indexer......................... : @RANLIB@"
 
 echo ""
 echo "Enable Windows build (experimental)............. : @fla_enable_windows_build@"
+
+
+echo ""
+echo "Enable ILP64 data types for libflame............. : @fla_enable_ilp64@"
 
 echo ""
 echo "Create static library........................... : @fla_enable_static_build@"
@@ -146,7 +162,12 @@ echo "   Mangled name................................. : @fla_f77_foobar_mangled
 fi
 
 echo ""
-echo "libflame install directory prefix............... : @prefix@"
+echo "Installation directories"
+echo "   prefix....................................... : "'@prefix@'
+echo "   exec_prefix.................................. : "'@exec_prefix@'
+echo ""
+echo "   libraries will be installed in............... : "'@libdir@'
+echo "   header files will be installed in............ : "'@includedir@'
 echo ""
 echo "Configuration complete!"
 echo ""

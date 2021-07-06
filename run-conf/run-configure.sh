@@ -1,10 +1,26 @@
 #!/bin/bash
 
+# This code allows us to invoke configure with the same relative
+# path-to-the-top-level-directory component used to invoke this script.
+script_name=${0##*/}
+dist_path=${0%/run-conf/${script_name}}
+configure_path=${dist_path}/configure
+
 # The install prefix specifies the root directory of the installation.
-export FLAME_INSTALL_PREFIX=$HOME/flame
+# If you enable this option, generally speaking, libraries will be
+# installed to $PREFIX_INST/lib and header files to $PREFIX_INST/include.
+export PREFIX_INST="--prefix=$HOME/flame"
+
+# If you want finer control over where libraries and headers are installed,
+# change the paths passed to the --libdir and --includedir options to your
+# desired installation paths. You can also comment these lines out if you
+# are fine using the default installation path, which is based on the
+# '/usr/local' prefix.
+#export LIBDIR_INST="    --libdir=$HOME/flame/lib"
+#export INCDIR_INST="--includedir=$HOME/flame/include"
 
 # Override the default compiler search order and default compiler flags.
-export CC=gcc
+#export CC=clang
 #export CC=icc
 
 # Any options specified in CFLAGS will be preprended to the flags that
@@ -12,7 +28,10 @@ export CC=gcc
 export CFLAGS="-march=native"
 
 # Run configure.
-./configure --prefix=${FLAME_INSTALL_PREFIX} \
+${configure_path} \
+            ${PREFIX_INST} \
+            ${LIBDIR_INST} \
+            ${INCDIR_INST} \
             --disable-verbose-make-output \
             --enable-static-build \
             --enable-dynamic-build \
@@ -21,11 +40,11 @@ export CFLAGS="-march=native"
             --disable-max-arg-list-hack \
             --enable-non-critical-code \
             --disable-builtin-blas \
-            --enable-lapack2flame \
+            --disable-lapack2flame \
             --disable-external-lapack-for-subproblems \
             --enable-external-lapack-interfaces \
             --disable-blas3-front-end-cntl-trees \
-            --enable-multithreading=pthreads \
+            --enable-multithreading=openmp \
             --enable-supermatrix \
             --disable-gpu \
             --disable-vector-intrinsics \

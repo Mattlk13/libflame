@@ -8,6 +8,11 @@
 
 */
 
+/*
+    Copyright (c) 2021 Advanced Micro Devices, Inc.  All rights reserved.
+    Mar 16, 2021
+*/
+
 
 
 // --- Miscellaneous macro definitions -----------------------------------------
@@ -19,6 +24,29 @@
   #define restrict  __restrict
 #endif
 
+// --- Macro to enable/disable Thread Local Storage (TLS) for global variables -
+#if defined(WINDOWS_FLA_SHARED_BUILD) && defined(WINDOWS_FLA_TEST)
+#define ENABLE_THREAD_LOCAL_STORAGE 0
+#define LIBFLAME_IMPORT __declspec(dllimport)
+#else
+#if !defined FLA_ENABLE_MULTITHREADING && !defined FLA_ENABLE_SUPERMATRIX
+#define ENABLE_THREAD_LOCAL_STORAGE 1
+#define LIBFLAME_IMPORT
+#else
+#define ENABLE_THREAD_LOCAL_STORAGE 0
+#define LIBFLAME_IMPORT
+#endif
+#endif
+
+#if ENABLE_THREAD_LOCAL_STORAGE
+#ifdef FLA_ENABLE_WINDOWS_BUILD
+#define TLS_CLASS_SPEC __declspec(thread)
+#else
+#define TLS_CLASS_SPEC __thread
+#endif
+#else
+#define TLS_CLASS_SPEC
+#endif
 
 // --- Type-related macro definitions ------------------------------------------
 
@@ -184,6 +212,10 @@
   #define FLA_DEFAULT_N_BLOCKSIZE  128
 #endif
 
+// Blocksize for hierarchical storage of matrices for FLASH based
+// external interfaces
+#define FLA_EXT_HIER_BLOCKSIZE 128
+
 // QR and LQ factorizations typically has an inner blocksize that corresponds
 // to the length of the S (or T) block Householder matrix. For consistency, we
 // define the ratio of the inner blocksize to the outer blocksize here, as it
@@ -200,7 +232,26 @@
 #define FLA_BIDIAG_INNER_TO_OUTER_B_RATIO  (0.25)
 #define FLA_CAQR_INNER_TO_OUTER_B_RATIO    (0.25)
 
+// Matrix size thresholds for choosing unbloked non-FLA variant of QR for 
+// small matrices
+#define FLA_GEQRF__STHRESH (320)
 
+//POTRF, threshold numbers to chose paths for performance
+#define FLA_POTRF_FLOAT_SMALL         (70)
+#define FLA_POTRF_DOUBLE_SMALL        (75)
+#define FLA_POTRF_DOUBLE_MID          (423)
+
+//GETRF , threshold numbers to chose paths for performance
+#define FLA_GETRF_SMALL               (85)
+#define FLA_GETRF_FLOAT               (1440)
+#define FLA_GETRF_COMPLEX             (670)
+#define FLA_GETRF_DOUBLE_COMPLEX      (1630)
+
+// GETRFNPI , these thresholds are used to chose between 3 algorithms to get best
+// results in terms of perfmormance
+#define FLA_MN_SIZE            (373321)
+#define FLA_NFACT_PERCENT      (0.51)
+#define FLA_FULL_DGER_CONSTANT (200)
 
 // --- Error-related macro definitions -----------------------------------------
 
