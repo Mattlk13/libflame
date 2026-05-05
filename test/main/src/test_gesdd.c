@@ -237,7 +237,6 @@ void fla_test_gesdd_experiment(char *tst_api, test_params_t *params, integer dat
         }
         else
         {
-            create_realtype_vector(datatype, &s_in, fla_min(m, n));
             /* Generate matrix A from known singular values */
             create_realtype_vector(datatype, &s_in, fla_min(m, n));
             create_svd_matrix(datatype, 'A', m, n, A, lda, s_in, s_one, s_one, i_one, i_one, info);

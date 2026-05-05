@@ -7,13 +7,6 @@
 *     Modifications Copyright (c) 2025 Advanced Micro Devices, Inc.  All rights reserved.
 */
 #include "FLA_f2c.h" /* > \brief \b DLASWP performs a series of row interchanges on a general rectangular matrix. */
-
-#define DLASWP_LARGE_THRESHOLD_MIN 1024
-#define DLASWP_TILE_SIZE_SMALL 32
-#define DLASWP_TILE_SIZE_LARGE 64
-#define DLASWP_TILE_MASK_SMALL 31  /* DLASWP_TILE_SIZE_SMALL - 1 */
-#define DLASWP_TILE_MASK_LARGE 63  /* DLASWP_TILE_SIZE_LARGE - 1 */
-
 /* =========== DOCUMENTATION =========== */
 /* Online html documentation available at */
 /* http://www.netlib.org/lapack/explore-html/ */

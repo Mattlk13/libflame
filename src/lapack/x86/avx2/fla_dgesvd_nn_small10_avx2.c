@@ -11,7 +11,6 @@
 
 #if FLA_ENABLE_AMD_OPT
 
-
 extern void dlartg_(doublereal *da, doublereal *db, doublereal *c__, doublereal *s, doublereal *r);
 
 void fla_dgesvd_xx_small10_avx2(aocl_int64_t wntu, aocl_int64_t wntv, aocl_int64_t *m,

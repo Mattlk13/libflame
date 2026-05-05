@@ -77,6 +77,7 @@ void FLA_get_optimum_params_zgetrf(fla_dim_t m, fla_dim_t n, fla_dim_t *nb, int 
     return;
 }
 
+
 /*
  * LU with partial pivoting for tiny matrices
  *
